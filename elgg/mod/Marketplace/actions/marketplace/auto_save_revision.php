@@ -1,0 +1,127 @@
+<?php
+/**
+ * Action called by AJAX periodic auto saving when editing.
+ */
+
+$guid = (int) get_input('guid');
+
+$dog_name = elgg_get_dog_name_input('dog_name');
+$breed = get_breed_input('breed');
+$date_of_birth = get_date_of_birth_input('date_of_birth');
+$sex = get_sex_input('sex');
+$color = get_color_input('color');
+$cost = get_cost('cost');
+$container_guid = get_input('container_guid');
+
+if (empty($dog_name)) {
+	return elgg_error_response(elgg_echo('marketplace:error:missing:dog_name'));
+}
+
+if (empty($breed)) {
+	return elgg_error_response(elgg_echo('marketplace:error:missing:breed'));
+}
+if (empty($sex)) {
+	return elgg_error_response(elgg_echo('marketplace:error:missing:sex'));
+}
+if (empty($cost)) {
+	return elgg_error_response(elgg_echo('marketplace:error:missing:cost'));
+}
+
+$marketplace = null;
+
+if ($guid) {
+	$entity = get_entity($guid);
+	if ($entity instanceof Elggmarketplace && $entity->canEdit()) {
+		$marketplace = $entity;
+	} else {
+		return elgg_error_response(elgg_echo('marketplace:error:listing_not_found'));
+	}
+} else {
+	$marketplace = new Elggmarketplace();
+
+	// force draft and private for autosaves.
+	$marketplace->status = 'draft';
+	$marketplace->access_id = ACCESS_PRIVATE;
+	$marketplace->dog_name = $dog_name;
+	$marketplace->breed = $breed;
+	$marketplace->date_of_birth = $date_of_birth;
+	$marketplace->sex = $sex;
+	$marketplace->color = $color;
+	$marketplace->cost = $cost;
+	$marketplace->container_guid = $container_guid;
+
+	// mark this as a brand new listing so we can work out the
+	// river / revision logic in the real save action.
+	$marketplace->new_listing = true;
+
+	if (!$marketplace->save()) {
+		return elgg_error_response(elgg_echo('marketplace:error:cannot_save'));
+	}
+}
+
+// create draft annotation
+
+// annotations don't have a "time_updated" so
+// we have to delete everything or the times are wrong.
+
+// don't save if nothing changed
+$auto_save_annotations = $marketplace->getAnnotations([
+	'annotation_name' => 'marketplace_auto_save',
+	'limit' => 1,
+]);
+if ($auto_save_annotations) {
+	$auto_save = $auto_save_annotations[0];
+} else {
+	$auto_save = false;
+}
+
+if (!$auto_save) {
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $breed);
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $date_of_birth);
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $sex);
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $color);
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $cost);
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value != $breed) {
+	$marketplace->deleteAnnotations('marketplace_auto_save');
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $breed);
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value == $breed) {
+	// this isn't an error because we have an up to date annotation.
+	$annotation_id = $auto_save->id;
+}
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value != $date_of_birth) {
+	$marketplace->deleteAnnotations('marketplace_auto_save');
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $date_of_birth);
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value == $date_of_birth) {
+	// this isn't an error because we have an up to date annotation.
+	$annotation_id = $auto_save->id;
+}
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value != $sex) {
+	$marketplace->deleteAnnotations('marketplace_auto_save');
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $sex);
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value == $sex) {
+	// this isn't an error because we have an up to date annotation.
+	$annotation_id = $auto_save->id;
+}
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value != $color) {
+	$marketplace->deleteAnnotations('marketplace_auto_save');
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $color);
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value == $color) {
+	// this isn't an error because we have an up to date annotation.
+	$annotation_id = $auto_save->id;
+}
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value != $cost) {
+	$marketplace->deleteAnnotations('marketplace_auto_save');
+	$annotation_id = $marketplace->annotate('marketplace_auto_save', $cost);
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value == $cost) {
+	// this isn't an error because we have an up to date annotation.
+	$annotation_id = $auto_save->id;
+}
+if (!$annotation_id) {
+	return elgg_error_response(elgg_echo('marketplace:error:cannot_auto_save'));
+}
+
+return elgg_ok_response([
+	'success' => true,
+	'message' => elgg_echo('marketplace:message:saved'),
+	'guid' => $marketplace->guid,
+]);

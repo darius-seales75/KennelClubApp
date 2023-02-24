@@ -1,0 +1,44 @@
+<?php
+
+namespace Elgg\marketplace;
+
+use Elgg\Plugins\PluginTesting;
+
+/**
+ * @group Plugins
+ */
+class CanCommentIntegrationTest extends \Elgg\IntegrationTestCase {
+	
+	use PluginTesting;
+	
+	/**
+	 * @dataProvider marketplaceCommentStatusProvider
+	 */
+	public function testCanComment($enable_comments, $status, $expected) {
+		$marketplace = $this->createObject([
+			'subtype' => 'marketplace',
+		], [
+			'comments_on' => $enable_comments,
+			'status' => $status,
+		]);
+		
+		$this->assertInstanceOf(\Elggmarketplace::class, $marketplace);
+		$this->assertFalse($marketplace->canComment());
+		
+		$user = $this->createUser();
+		$session = _elgg_services()->session;
+		
+		$session->setLoggedInUser($user);
+		
+		$this->assertEquals($expected, $marketplace->canComment());
+	}
+	
+	public function marketplaceCommentStatusProvider() {
+		return [
+			['On', 'published', true],
+			['On', 'draft', false],
+			['Off', 'published', false],
+			['Off', 'draft', false],
+		];
+	}
+}

@@ -1,0 +1,46 @@
+<?php
+
+namespace Elgg\Marketplace\Notifications;
+
+use Elgg\Notifications\NotificationEventHandler;
+
+/**
+ * Notification Event Handler for 'object' 'marketplace' 'publish' action
+ */
+class PublishMarketplaceEventHandler extends NotificationEventHandler {
+
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function getNotificationSubject(\ElggUser $recipient, string $method): string {
+		return elgg_echo('marketplace:notify:subject', [$this->event->getObject()->getDisplayName()], $recipient->getLanguage());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function getNotificationSummary(\ElggUser $recipient, string $method): string {
+		return elgg_echo('marketplace:notify:summary', [$this->event->getObject()->getDisplayName()], $recipient->getLanguage());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	protected function getNotificationBody(\ElggUser $recipient, string $method): string {
+		$entity = $this->event->getObject();
+		
+		return elgg_echo('marketplace:notify:body', [
+			$this->event->getActor()->getDisplayName(),
+			$entity->getDisplayName(),
+			$entity->getBreed(),
+			$entity->getURL(),
+		], $recipient->getLanguage());
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	protected static function isConfigurableForGroup(\ElggGroup $group): bool {
+		return $group->isToolEnabled('marketplace');
+	}
+}

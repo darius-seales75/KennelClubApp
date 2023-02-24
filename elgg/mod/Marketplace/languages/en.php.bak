@@ -1,0 +1,69 @@
+<?php
+/**
+ * Translation file
+ *
+ * Note: don't change the return array to short notation because Transifex can't handle those during `tx push -s`
+ */
+
+return array(
+	'item:object:marketplace' => 'marketplace',
+	'collection:object:marketplace' => 'marketplaces',
+	'collection:object:marketplace:all' => 'All site marketplaces',
+	'collection:object:marketplace:owner' => '%s\'s marketplaces',
+	'collection:object:marketplace:group' => 'Group marketplaces',
+	'collection:object:marketplace:friends' => 'Friends\' marketplaces',
+	'add:object:marketplace' => 'Add marketplace listing',
+	'edit:object:marketplace' => 'Edit marketplace listing',
+	'notification:object:marketplace:publish' => "Send a notification when a marketplace is published",
+	'notifications:mute:object:marketplace' => "about the marketplace '%s'",
+
+	'marketplace:revisions' => 'Revisions',
+	'marketplace:archives' => 'Archives',
+
+	'groups:tool:marketplace' => 'Enable group marketplace',
+	'groups:tool:marketplace:description' => 'Allow group members to write marketplaces in this group.',
+
+	// Editing
+	'marketplace:breed' => 'breed',
+	'marketplace:date_of_birth' => 'date_of_birth',
+	'marketplace:sex' => 'sex',
+	'marketplace:color' => 'color',
+	'marketplace:cost' => 'cost',
+	'marketplace:save_status' => 'Last saved: ',
+
+	'marketplace:revision' => 'Revision',
+	'marketplace:auto_saved_revision' => 'Auto Saved Revision',
+
+	// messages
+	'marketplace:message:saved' => 'marketplace listing saved.',
+	'marketplace:error:cannot_save' => 'Cannot save marketplace listing.',
+	'marketplace:error:cannot_auto_save' => 'Cannot automatically save marketplace listing.',
+	'marketplace:error:cannot_write_to_container' => 'Insufficient access to save marketplace to group.',
+	'marketplace:messages:warning:draft' => 'There is an unsaved draft of this listing!',
+	'marketplace:edit_revision_notice' => '(Old version)',
+	'marketplace:none' => 'No marketplace listings',
+	'marketplace:error:missing:title' => 'Please enter a marketplace title!',
+	'marketplace:error:missing:description' => 'Please enter the body of your marketplace!',
+	'marketplace:error:listing_not_found' => 'Cannot find specified marketplace listing.',
+	'marketplace:error:revision_not_found' => 'Cannot find this revision.',
+
+	// river
+	'river:object:marketplace:create' => '%s published a marketplace listing %s',
+	'river:object:marketplace:comment' => '%s commented on the marketplace %s',
+
+	// notifications
+	'marketplace:notify:summary' => 'New marketplace listing called %s',
+	'marketplace:notify:subject' => 'New marketplace listing: %s',
+	'marketplace:notify:body' => '%s published a new marketplace listing: %s
+
+%s
+
+View and comment on the marketplace listing:
+%s',
+
+	// widget
+	'widgets:marketplace:name' => 'marketplace listings',
+	'widgets:marketplace:description' => 'Display your latest marketplace listings',
+	'marketplace:moremarketplaces' => 'More marketplace listings',
+	'marketplace:numbertodisplay' => 'Number of marketplace listings to display',
+);

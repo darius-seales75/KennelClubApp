@@ -1,0 +1,4 @@
+<?php
+/**
+ * Marketplace view sidebar
+ */
