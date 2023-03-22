@@ -1,4 +1,0 @@
-<?php
-/**
- * Listing view sidebar
- */
