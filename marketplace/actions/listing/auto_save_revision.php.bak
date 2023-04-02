@@ -1,0 +1,82 @@
+<?php
+/**
+ * Action called by AJAX periodic auto saving when editing.
+ */
+
+$guid = (int) get_input('guid');
+
+$title = elgg_get_title_input();
+$description = get_input('description');
+$container_guid = get_input('container_guid');
+
+if (empty($title)) {
+	return elgg_error_response(elgg_echo('listing:error:missing:title'));
+}
+
+if (empty($description)) {
+	return elgg_error_response(elgg_echo('listing:error:missing:description'));
+}
+
+$listing = null;
+
+if ($guid) {
+	$entity = get_entity($guid);
+	if ($entity instanceof ElggMarketplace && $entity->canEdit()) {
+		$listing = $entity;
+	} else {
+		return elgg_error_response(elgg_echo('listing:error:post_not_found'));
+	}
+} else {
+	$listing = new ElggMarketplace();
+
+	// force draft and private for autosaves.
+	$listing->status = 'draft';
+	$listing->access_id = ACCESS_PRIVATE;
+	$listing->title = $title;
+	$listing->description = $description;
+	$listing->container_guid = $container_guid;
+
+	// mark this as a brand new post so we can work out the
+	// river / revision logic in the real save action.
+	$listing->new_post = true;
+
+	if (!$listing->save()) {
+		return elgg_error_response(elgg_echo('listing:error:cannot_save'));
+	}
+}
+
+// create draft annotation
+
+// annotations don't have a "time_updated" so
+// we have to delete everything or the times are wrong.
+
+// don't save if nothing changed
+$auto_save_annotations = $listing->getAnnotations([
+	'annotation_name' => 'listing_auto_save',
+	'limit' => 1,
+]);
+if ($auto_save_annotations) {
+	$auto_save = $auto_save_annotations[0];
+} else {
+	$auto_save = false;
+}
+
+if (!$auto_save) {
+	$annotation_id = $blog->annotate('listing_auto_save', $description);
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value != $description) {
+	$blog->deleteAnnotations('listing_auto_save');
+	$annotation_id = $blog->annotate('listing_auto_save', $description);
+} elseif ($auto_save instanceof ElggAnnotation && $auto_save->value == $description) {
+	// this isn't an error because we have an up to date annotation.
+	$annotation_id = $auto_save->id;
+}
+
+if (!$annotation_id) {
+	return elgg_error_response(elgg_echo('listing:error:cannot_auto_save'));
+}
+
+return elgg_ok_response([
+	'success' => true,
+	'message' => elgg_echo('listing:message:saved'),
+	'guid' => $listing->guid,
+]);
