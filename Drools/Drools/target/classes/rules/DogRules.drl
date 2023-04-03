@@ -1,0 +1,165 @@
+package com.chud.demo;
+import com.chud.demo.models.SampleModel;
+//import function com.chud.demo.hello;
+rule "Test"
+	when
+		doc : SampleModel()
+		
+	then
+		//doc.getReason().add("reason,,,,");
+		//doc.getAnswer().add("ans,,,,");
+		//doc.setQuestion("reason,,,,");
+		System.out.println("Test....");
+		//System.out.println( hello( "James" ) );
+end 
+
+rule "Dog has not eaten in (<=2) days"
+	when
+		doc : SampleModel(dogNotEatSince<=2)
+	then
+		doc.getReason().add("dog may be going through a picky eating period where the dog would only consume its personally approved food.");
+		doc.getAnswer().add("owner is to observe for 2 more days");
+		System.out.println("Dog has not eaten in (<=2) days");
+end
+
+rule "Dog has not eaten in (>=4) days"
+	when
+		doc : SampleModel(dogNotEatSince>=4)
+	then
+		doc.getReason().add("dog may be going through a picky eating period where the dog would only consume its personally approved food.");
+		doc.getAnswer().add("bring to vet");
+		System.out.println("Dog has not eaten in (>=4) days");
+end
+
+rule "Dog is eating grass and vomiting"
+	when
+		doc : SampleModel(isDogEatingGrass==true,isDogVomitting==true)
+	then
+		doc.getAnswer().add("the dog is due for a deworming, could buy dewormer tablets tablets dosage is usually 1 tablet for every ten pounds (NB get brand and image)");
+		System.out.println("Dog is eating grass and vomiting");
+end
+
+rule "Dog is scratching often?"
+	when
+		doc : SampleModel(isDogScratching==true)
+	then
+		doc.setQuestion("Check dog for fleas and ticks?");
+		System.out.println("Dog is scratching often?");
+end
+
+rule "Check dog for fleas and ticks?"
+	when
+		doc : SampleModel(isDogTicks==true,isDogFleas==true)
+	then
+		doc.setQuestion("ask the vet for the best option and instructions on how to use it for flea and tick spray or medicine. Some recommended options are Nexgard, Bravecto and Frontline.");
+		System.out.println("Check dog for fleas and ticks?");
+end
+
+rule "was there any change in the dog’s diet or since the introduction of new product or item of consumption"
+	when
+		doc : SampleModel(isChangeInDiet==true||introductionOfNewProd==true)
+	then
+		doc.getAnswer().add("the dog may be experiencing an allergic reaction from the change or introduction of the new item.");
+		System.out.println("was there any change in the dog’s diet or since the introduction of new product or item of consumption");
+end
+
+rule "Check dog for no fleas and no ticks?"
+	when
+		doc : SampleModel(isDogTicks==false,isDogFleas==false)
+	then
+		doc.setQuestion("how often do you bathe your dog?");
+		System.out.println("Check dog for no fleas and no ticks?");
+end
+
+rule "how often do you bathe your dog?"
+	when
+		doc : SampleModel(dogBathPerMonth>1)
+	then
+		doc.getAnswer().add("the dog’s skin may be dried out as all the essential oils have been washed out from its skin and fur.");
+		System.out.println("how often do you bathe your dog?");
+end
+
+rule "Dog has bad breath?"
+	when
+		doc : SampleModel(isDogHasBadBreath==true)
+	then
+		doc.getAnswer().add("The use of dental sticks or brushing the dog’s teeth with a warm damp cloth can improve the smell of the dog’s breath");
+		System.out.println("Dog has bad breath?");
+end
+
+rule "dog is experiencing hair loss / bald spots?"
+	when
+		doc : SampleModel(isDogExpHairLoss==true)
+	then
+		doc.getAnswer().add("Take the dog to the vet as this may be a result of mange which is a mite that targets the dogs skin and hair.");
+		System.out.println("dog is experiencing hair loss / bald spots?");
+end
+
+rule "the dog is vomiting / or diarrhea?"
+	when
+		doc : SampleModel(isDogDiarrea==true||isDogVomitting==true)
+	then
+		doc.getAnswer().add("Rehydrate with coconut water and gravol can  be used to ease symptoms");
+		doc.setQuestion("What is the color of the vomit");
+		System.out.println("the dog is vomiting / or diarrhea?");
+end
+
+rule "the dog is vomiting / or diarrhea and color is clear"
+	when
+		doc : SampleModel((isDogDiarrea==true||isDogVomitting==true),colourOfVomit=="Clear")
+	then
+		doc.getAnswer().add("The dog is fine and may have ingested too much water");
+		System.out.println("the dog is vomiting / or diarrhea and color is clear");
+end
+
+rule "the dog is vomiting / or diarrhea and color is yellow"
+	when
+		doc : SampleModel((isDogDiarrea==true||isDogVomitting==true),colourOfVomit=="Yellow")
+	then
+		doc.getAnswer().add("This is a result of bile within the vomit");
+		System.out.println("the dog is vomiting / or diarrhea and color is yellow");
+end
+
+rule "the dog is vomiting / or diarrhea and color is red"
+	when
+		doc : SampleModel((isDogDiarrea==true||isDogVomitting==true),colourOfVomit=="Red")
+	then
+		doc.getAnswer().add("Bring to vet as soon as this is major concern");
+		System.out.println("the dog is vomiting / or diarrhea and color is red");
+end
+
+rule "If a new food was introduced "
+	when
+		doc : SampleModel(newFoodIntroduced==true)
+	then
+		doc.getAnswer().add("The dog may have not adjusted to the new food ");
+		doc.getAnswer().add("if the food is cooked then if food is too hot or cold may result in the above symptoms");
+		System.out.println("If a new food was introduced ");
+end
+
+rule "if anything noticeably strange was ingested by the dog"
+	when
+		doc : SampleModel(isStrangeIngested==true)
+	then
+		doc.getAnswer().add("Bring to vet, the vet may keep to dog for observation or may tell the owner to observe the dog if the item may be passed out of its system.");
+		System.out.println("if anything noticeably strange was ingested by the dog");
+end
+
+rule "Dog is not gaining weight "
+	when
+		doc : SampleModel(dogNotGainingWeight==true)
+	then
+		doc.getAnswer().add("The owner could by a type of chew bone to help with weight gain");
+		doc.getAnswer().add("bring the dog to the vet as this may be a sign of stomach cancer.");
+		System.out.println("Dog is not gaining weight");
+end
+
+rule "Dog has cold in eye"
+	when
+		doc : SampleModel(isDogHasColdInEye==true)
+	then
+		doc.getAnswer().add("Dog could be due for a deworming");
+		doc.getAnswer().add("The breed of the dog may be susceptible to cold in its eye. There is also a tear line which may be natural for the breed of dog the owner has.");
+		doc.getAnswer().add("the dog could be suffering from allergens in its environment ");
+		System.out.println("Dog has cold in eye");
+end
