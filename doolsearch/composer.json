@@ -1,0 +1,24 @@
+{
+	"name": "elgg/droolsearch",
+	"type": "elgg-plugin",
+	"description": "Allows the user to have their questions answered",
+	"license": "GPL-2.0-only",
+	"keywords": ["content", ],
+	"homepage": "",
+	"authors": [
+		{
+			"name": "Darius seales",
+			"role": "Developer"
+		}
+	],
+	//"support": {
+		//"source": "https://github.com/elgg/elgg",
+		//"issues": "https://github.com/elgg/elgg/issues"
+	//},
+	"require": {
+		"composer/installers": "^1.0.8"
+	},
+	"conflict": {
+		"elgg/elgg": "<3.3"
+	}
+}

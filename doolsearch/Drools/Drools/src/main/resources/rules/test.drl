@@ -1,0 +1,6 @@
+package com.chud.demo;
+import java.lang.String;
+
+function String hello(String applicantName) {
+    return "Hello " + applicantName + "!";
+}

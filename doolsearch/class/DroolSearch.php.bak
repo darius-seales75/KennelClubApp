@@ -1,0 +1,37 @@
+<?php
+
+namespace DroolSearch;
+
+use \Elgg\ViewsService;
+
+class SearchBar {
+
+    public static function renderDroolSearch() {
+        // Render the search bar view
+        echo elgg_view('drool_search/search_form');
+    }
+
+    public static function processSearchRequest() {
+        // Get the search input from the request
+        $search_input = get_input('search_input');
+
+        // Insert the search input into the Drools rules engine
+        $drools = new \Drools\Drools();
+        $drools->insert($search_input);
+
+        // Redirect to the search results page
+        forward('/search?search_input=' . urlencode($search_input));
+    }
+
+    public static function registerViews() {
+        // Register the search bar view
+        elgg_register_ajax_view('drool_search/search_form');
+
+        // Register the search results view
+        elgg_register_viewtype('search');
+        elgg_register_view('search/results', [
+            'search_input' => elgg_get_plugin_setting('search_input', 'drool_search', 'Search'),
+            'content' => elgg_view('drool_search/search_results')
+        ]);
+    }
+}
